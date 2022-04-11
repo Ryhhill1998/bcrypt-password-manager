@@ -144,6 +144,7 @@ app.post("/password-add", function(req, res) {
       userAccounts.forEach(function(account) {
         if (account.website === enteredWebsite) {
           accountExists = true;
+          console.log("Credentials already saved for this website");
         }
       });
       // Save these credentials if details do not exist for this website

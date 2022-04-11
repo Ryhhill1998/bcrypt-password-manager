@@ -35,7 +35,7 @@ body {
 }
 
 input {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 form {
@@ -45,6 +45,20 @@ form {
 #fingerprint-icon {
   margin-top: 20px;
   font-size: 2rem;
+}
+
+#password {
+  width: 295px;
+  display: inline-block;
+}
+
+.generate {
+  display: inline-block;
+  margin-bottom: 3px;
+  padding: 0;
+  height: 38px;
+  width: 100px;
+  font-size: 1rem;
 }
 
 /* #retyped-password {
