@@ -7,18 +7,42 @@ body {
   padding-left: 10px;
 }
 
-#main-body {
+.main-body {
   width: 70vw;
+  padding: 170px 0;
 }
 
-.jumbotron {
-  padding: 200px 0;
+.logo {
+  margin-bottom: 30px;
+}
+
+.details {
+  width: 400px;
+}
+
+.homepage-button {
+  width: 110px;
 }
 
 .register {
   width: 110px;
+  margin-top: 10px;
 }
 
 .login {
   width: 110px;
+  margin-top: 10px;
+}
+
+input {
+  margin: 10px 0;
+}
+
+form {
+  margin-top: 20px;
+}
+
+#fingerprint-icon {
+  margin-top: 20px;
+  font-size: 2rem;
 }
