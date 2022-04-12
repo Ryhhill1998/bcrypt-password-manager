@@ -39,7 +39,6 @@ const User = mongoose.model("User", userSchema);
 // Keep track of logged in user
 var user = "";
 
-
 // get requests
 app.get("/", function(req, res) {
   res.render("home");
@@ -62,7 +61,7 @@ app.get("/password-add", function(req, res) {
 });
 
 app.get("/password-search", function(req, res) {
-  res.render("search");
+  res.render("search", {website: "", password: ""});
 });
 
 
@@ -161,6 +160,31 @@ app.post("/password-add", function(req, res) {
             res.redirect("/password-home");
           }
         });
+      }
+    }
+  });
+
+});
+
+
+app.post("/password-search", function(req, res) {
+
+  const enteredWebsite = req.body.website;
+  var accountExists = false;
+
+  User.findOne({username: user}, function(err, foundUser) {
+    if (err) {
+      console.log(err);
+    } else {
+      const userAccounts = foundUser.accounts;
+      userAccounts.forEach(function(account) {
+        if (account.website === enteredWebsite) {
+          res.render("search", {website: enteredWebsite, password: account.password});
+          accountExists = true;
+        }
+      });
+      if (!accountExists) {
+        res.render("search", {website: enteredWebsite, password: "Credentials not found"});
       }
     }
   });
