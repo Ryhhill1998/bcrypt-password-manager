@@ -56,15 +56,20 @@ var savedAccount = false;
 
 // get requests
 app.get("/", function(req, res) {
-  res.render("home");
+  session = req.session;
+  if (session.userid) {
+    res.redirect("/dashboard");
+  } else {
+    res.render("home");
+  }
 });
 
 app.get("/register", function(req, res) {
-  res.render("register");
+  res.render("register", {feedback: ""});
 });
 
 app.get("/login", function(req, res) {
-  res.render("login");
+  res.render("login", {feedback: ""});
 });
 
 app.get("/dashboard", function(req, res) {
@@ -77,11 +82,13 @@ app.get("/dashboard", function(req, res) {
 });
 
 app.get("/password-add", function(req, res) {
-  res.render("add", {feedback: ""});
+  session = req.session;
+  res.render("add", {username: session.userid, feedback: ""});
 });
 
 app.get("/password-search", function(req, res) {
-  res.render("search", {website: "", password: ""});
+  session = req.session;
+  res.render("search", {username: session.userid, website: "", password: ""});
 });
 
 app.get("/logout", function(req, res) {
@@ -104,16 +111,14 @@ app.post("/register", function(req, res) {
   const retypedPassword = req.body.retypedPassword;
 
   if (enteredPassword != retypedPassword) {
-    console.log("Passwords must match!");
-    res.redirect("/register");
+    res.render("register", {feedback: "Failure"});
   } else {
     User.findOne({username: enteredUsername}, function(err, foundUser) {
       if (err) {
         console.log(err);
       } else {
         if (foundUser) {
-          console.log("User already exists");
-          res.redirect("/register");
+          res.render("register", {feedback: "User exists"});
         } else {
           const newUser = new User({
             username: enteredUsername,
@@ -123,7 +128,6 @@ app.post("/register", function(req, res) {
             if (err) {
               console.log(err);
             } else {
-              console.log("Successfully saved user to database");
               session = req.session;
               session.userid = enteredUsername;
               res.redirect("/dashboard");
@@ -152,7 +156,7 @@ app.post("/login", function(req, res) {
         res.redirect("/dashboard");
       } else {
         console.log("Incorrect credentials");
-        res.redirect("/login");
+        res.render("login", {feedback: "Failure"});
       }
     }
   });
