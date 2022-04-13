@@ -1,0 +1,43 @@
+<%- include("partials/header"); -%>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <a class="navbar-brand" href="/">ARcrypt</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/password-add">Add</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/password-search">Search</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout">Logout</a>
+      </li>
+    </ul>
+  </div>
+  <span id="username"><%= username %></span>
+  <i id="profile-icon" class="fa-solid fa-user"></i>
+</nav>
+
+<div class="container-fluid main-body">
+  <div class="jumbotron">
+    <span id="logo" class="fa-stack fa-3x">
+      <i class="fa-solid fa-unlock fa-stack-2x"></i>
+      <i id="fingerprint-icon" class="fab fa-solid fa-fingerprint fa-stack-1x fa-inverse"></i>
+    </span>
+    <h2 class="display-5">Dashboard</h2>
+    <hr class="my-4">
+    <p>Add new passwords or search for saved data</p>
+    <p class="lead">
+      <a class="btn btn-outline-dark btn-lg homepage-button" href="/password-add" role="button"><i class="fa-solid fa-plus"></i></a>
+      <a class="btn btn-dark btn-lg homepage-button" href="/password-search" role="button"><i class="fa-solid fa-magnifying-glass"></i></a>
+    </p>
+  </div>
+</div>
+
+
+
+<%- include("partials/footer"); -%>

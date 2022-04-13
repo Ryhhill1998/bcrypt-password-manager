@@ -81,6 +81,11 @@ form {
   font-size: 1.2rem;
 }
 
+#failure-icon {
+  color: orange;
+  font-size: 1.2rem;
+}
+
 /* #retyped-password {
   border-color: red;
   box-shadow: 0 0 10px red;

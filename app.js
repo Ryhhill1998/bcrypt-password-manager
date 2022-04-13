@@ -30,7 +30,7 @@ app.use(sessions({
   saveUninitialized: true
 }));
 
-var session;
+
 
 // Connect to mongoose
 mongoose.connect("mongodb://localhost:27017/passwordsDB");
@@ -48,7 +48,11 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 // Keep track of logged in user
-var user = "";
+var session;
+
+// Keep track if user just saved account
+var savedAccount = false;
+
 
 // get requests
 app.get("/", function(req, res) {
@@ -63,11 +67,10 @@ app.get("/login", function(req, res) {
   res.render("login");
 });
 
-app.get("/password-home", function(req, res) {
+app.get("/dashboard", function(req, res) {
   session = req.session;
-  console.log(session.userid);
   if (session.userid) {
-    res.render("passwords", {username: session.userid, feedback: "Add new passwords or search for saved data"});
+    res.render("dashboard", {username: session.userid});
   } else {
     res.redirect("/");
   }
@@ -123,7 +126,7 @@ app.post("/register", function(req, res) {
               console.log("Successfully saved user to database");
               session = req.session;
               session.userid = enteredUsername;
-              res.redirect("/password-home");
+              res.redirect("/dashboard");
             }
           });
         }
@@ -146,7 +149,7 @@ app.post("/login", function(req, res) {
       if (foundUser && foundUser.password === enteredPassword) {
         session = req.session;
         session.userid = enteredUsername;
-        res.redirect("/password-home");
+        res.redirect("/dashboard");
       } else {
         console.log("Incorrect credentials");
         res.redirect("/login");
@@ -174,7 +177,7 @@ app.post("/password-add", function(req, res) {
       userAccounts.forEach(function(account) {
         if (account.website === enteredWebsite) {
           accountExists = true;
-          res.render("add", {feedback: "Credentials already saved for this website"});
+          res.render("add", {feedback: "Failure"});
         }
       });
       // Save these credentials if details do not exist for this website
@@ -187,7 +190,8 @@ app.post("/password-add", function(req, res) {
           if (err) {
             console.log(err);
           } else {
-            res.render("passwords", {username: user, feedback: "Success"});
+            savedAccount = true;
+            res.render("add", {feedback: "Success"});
           }
         });
       }
