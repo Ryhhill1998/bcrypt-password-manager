@@ -18,6 +18,25 @@ function generateRandomCharacters(characterString, numOfCharacters) {
 };
 
 
+// Randomly choose upper case or lower case for each letter in string
+function allocateCasing(characterString) {
+
+  let characterList = characterString.split("");
+  const listLength = characterList.length;
+  const caseOptions = ["U", "L"];
+
+  for (var i = 0; i < listLength; i++) {
+    let caseChoice = caseOptions[Math.floor((Math.random() * 2))];
+    if (caseChoice === "U") {
+      characterList[i] = characterList[i].toUpperCase();
+    }
+  }
+
+  return characterList.join("");
+
+};
+
+
 // Shuffle characters in a String
 function shuffleCharacters(characterString) {
 
@@ -52,12 +71,10 @@ function generatePassword() {
   const randomSymbols = generateRandomCharacters(symbols, numOfSymbols);
   const randomNumbers = generateRandomCharacters(numbers, numOfNumbers);
 
-  let password = randomLetters + randomSymbols + randomNumbers;
-  console.log(password);
+  let password = allocateCasing(randomLetters) + randomSymbols + randomNumbers;
 
   for (var i = 0; i < shuffleNumber; i++) {
     password = shuffleCharacters(password);
-    console.log(password);
   }
 
   return password;

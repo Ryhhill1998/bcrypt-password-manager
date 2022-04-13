@@ -16,7 +16,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -53,11 +53,11 @@ app.get("/login", function(req, res) {
 });
 
 app.get("/password-home", function(req, res) {
-  res.render("passwords", {username: user});
+  res.render("passwords", {username: user, feedback: "Add new passwords or search for saved data"});
 });
 
 app.get("/password-add", function(req, res) {
-  res.render("add");
+  res.render("add", {feedback: ""});
 });
 
 app.get("/password-search", function(req, res) {
@@ -143,7 +143,7 @@ app.post("/password-add", function(req, res) {
       userAccounts.forEach(function(account) {
         if (account.website === enteredWebsite) {
           accountExists = true;
-          console.log("Credentials already saved for this website");
+          res.render("add", {feedback: "Credentials already saved for this website"});
         }
       });
       // Save these credentials if details do not exist for this website
@@ -156,8 +156,7 @@ app.post("/password-add", function(req, res) {
           if (err) {
             console.log(err);
           } else {
-            console.log("Successfully added new account credentials");
-            res.redirect("/password-home");
+            res.render("passwords", {username: user, feedback: "Success"});
           }
         });
       }

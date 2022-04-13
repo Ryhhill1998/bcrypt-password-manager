@@ -13,6 +13,9 @@
       <li class="nav-item">
         <a class="nav-link disabled" href="/password-search">Search</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/">Logout</a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -22,7 +25,7 @@
     <i class="fa-solid fa-unlock fa-stack-2x"></i>
     <i id="fingerprint-icon" class="fab fa-solid fa-fingerprint fa-stack-1x fa-inverse"></i>
   </span>
-    <form action="/password-search" method="post" class="form-signin">
+    <form action="/password-search" method="post" class="form-signin" autocomplete="off">
       <input name="website" type="text" value="<%= website %>" class="form-control" placeholder="Website" required autofocus>
       <input name="password" type="text" value="<%= password %>" class="form-control" placeholder="Password" readonly>
       <button class="btn btn-lg btn-dark btn-block register" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
