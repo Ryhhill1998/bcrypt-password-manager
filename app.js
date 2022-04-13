@@ -8,6 +8,8 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const sessions = require("express-session");
+
 const saltRounds = 10;
 const port = 3000;
 
@@ -22,12 +24,21 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+app.use(sessions({
+  secret: "secret string",
+  resave: false,
+  saveUninitialized: true
+}));
+
+var session;
+
 // Connect to mongoose
 mongoose.connect("mongodb://localhost:27017/passwordsDB");
 
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  sessionId: String,
   accounts: [{
     website: {type: String},
     password: {type: String}
@@ -53,7 +64,13 @@ app.get("/login", function(req, res) {
 });
 
 app.get("/password-home", function(req, res) {
-  res.render("passwords", {username: user, feedback: "Add new passwords or search for saved data"});
+  session = req.session;
+  console.log(session.userid);
+  if (session.userid) {
+    res.render("passwords", {username: session.userid, feedback: "Add new passwords or search for saved data"});
+  } else {
+    res.redirect("/");
+  }
 });
 
 app.get("/password-add", function(req, res) {
@@ -62,6 +79,17 @@ app.get("/password-add", function(req, res) {
 
 app.get("/password-search", function(req, res) {
   res.render("search", {website: "", password: ""});
+});
+
+app.get("/logout", function(req, res) {
+  req.session.destroy(function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Successfully destroyed session.");
+    }
+  });
+  res.redirect("/");
 });
 
 
@@ -93,7 +121,8 @@ app.post("/register", function(req, res) {
               console.log(err);
             } else {
               console.log("Successfully saved user to database");
-              user = enteredUsername;
+              session = req.session;
+              session.userid = enteredUsername;
               res.redirect("/password-home");
             }
           });
@@ -115,7 +144,8 @@ app.post("/login", function(req, res) {
       console.log(err);
     } else {
       if (foundUser && foundUser.password === enteredPassword) {
-        user = enteredUsername;
+        session = req.session;
+        session.userid = enteredUsername;
         res.redirect("/password-home");
       } else {
         console.log("Incorrect credentials");
@@ -129,12 +159,13 @@ app.post("/login", function(req, res) {
 
 app.post("/password-add", function(req, res) {
 
+  const username = session.userid;
   const enteredWebsite = req.body.website;
   const enteredPassword = req.body.password;
   var accountExists = false;
 
   // Find logged in user
-  User.findOne({username: user}, function(err, foundUser) {
+  User.findOne({username: username}, function(err, foundUser) {
     if (err) {
       console.log(err);
     } else {
@@ -168,10 +199,11 @@ app.post("/password-add", function(req, res) {
 
 app.post("/password-search", function(req, res) {
 
+  const username = session.userid;
   const enteredWebsite = req.body.website;
   var accountExists = false;
 
-  User.findOne({username: user}, function(err, foundUser) {
+  User.findOne({username: username}, function(err, foundUser) {
     if (err) {
       console.log(err);
     } else {
