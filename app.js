@@ -9,7 +9,6 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const sessions = require("express-session");
-const encrypt = require("mongoose-encryption");
 
 const saltRounds = 10;
 const port = 3000;
@@ -44,12 +43,6 @@ const userSchema = new mongoose.Schema({
     password: {type: String}
   }]
 });
-
-const encKey = "IVvlQGEVNNQCZyzn4uHWefhlpPhR4BMkiMzLth/vY+c=";
-const sigKey = "hLEXg3EoG/wGZRbb4e+t8iisbNXDRxhbwG//dJKjCCZo1wBf28ukmAeTHz/ZELejbZpLUHrsGCROoLfqrHqBXg==";
-
-// userSchema.plugin(encrypt, {encryptionKey: encKey, signingKey: sigKey, encryptedFields: ["accounts"]});
-
 
 const User = mongoose.model("User", userSchema);
 
@@ -202,6 +195,29 @@ app.post("/login", function(req, res) {
 });
 
 
+// post request to delete user from database
+app.post("/dashboard", function(req, res) {
+
+  const username = session.userid;
+
+  User.deleteOne({username: username}, function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Successfully deleted account");
+      req.session.destroy(function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully destroyed session.");
+        }
+      });
+      res.redirect("/");
+    }
+  })
+});
+
+
 // post website credentials added to DB by user
 app.post("/password-add", function(req, res) {
 
@@ -251,6 +267,7 @@ app.post("/password-search", function(req, res) {
   const username = session.userid;
   const enteredWebsite = req.body.website;
   const updatedPassword = req.body.password;
+  console.log(updatedPassword);
   const buttonClicked = req.body.button;
   var accountIndex = "";
 
@@ -288,7 +305,6 @@ app.post("/password-search", function(req, res) {
         console.log(err);
       } else {
         if (foundUser) {
-          console.log(foundUser);
           const userAccounts = foundUser.accounts;
           userAccounts.forEach(function(account, i) {
             if (account.website === enteredWebsite) {
@@ -297,7 +313,12 @@ app.post("/password-search", function(req, res) {
             }
           });
           if (accountExists) {
-            foundUser.accounts[accountIndex].password = updatedPassword;
+            const newCredentials = {
+              website: enteredWebsite,
+              password: updatedPassword
+            };
+            userAccounts[accountIndex] = newCredentials;
+            console.log(userAccounts);
             foundUser.save(function(err) {
               if (err) {
                 console.log(err);
@@ -312,7 +333,37 @@ app.post("/password-search", function(req, res) {
       }
     });
 
-  } 
+  } else if (buttonClicked === "delete") {
+    // find user details in DB
+    User.findOne({username: username}, function(err, foundUser) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (foundUser) {
+          console.log(foundUser);
+          const userAccounts = foundUser.accounts;
+          userAccounts.forEach(function(account, i) {
+            if (account.website === enteredWebsite) {
+              accountIndex = i;
+              accountExists = true;
+            }
+          });
+          if (accountExists) {
+            userAccounts.splice(accountIndex, 1);
+            foundUser.save(function(err) {
+              if (err) {
+                console.log(err);
+              } else {
+                res.render("search", {username: username, website: "", password: "", feedback: "Success2"});
+              }
+            });
+          } else {
+            res.render("search", {username: username, website: enteredWebsite, password: "", feedback: "Failure"});
+          }
+        }
+      }
+    });
+  }
 
 
 

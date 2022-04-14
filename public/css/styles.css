@@ -20,7 +20,7 @@ body {
 
 .main-body {
   width: 70vw;
-  padding: 170px 0;
+  padding: 150px 0;
 }
 
 .brand {
@@ -42,7 +42,7 @@ body {
 .register {
   width: 110px;
   margin-top: 10px;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .login {
@@ -116,6 +116,10 @@ form {
 #failure-icon {
   color: orange;
   font-size: 1.2rem;
+}
+
+.delete-account {
+  font-size: 0.9rem;
 }
 
 /* #retyped-password {
