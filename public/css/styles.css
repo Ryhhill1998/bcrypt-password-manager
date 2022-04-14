@@ -10,7 +10,7 @@ body {
 }
 
 .navbar-brand {
-  font-family: 'Kanit', sans-serif;
+  font-size: 1.2rem;
 }
 
 #profile-icon {
@@ -42,6 +42,7 @@ body {
 .register {
   width: 110px;
   margin-top: 10px;
+  font-size: 1rem;
 }
 
 .login {
@@ -66,7 +67,28 @@ form {
   color: #51DACF;
 }
 
+#website-search {
+  width: 295px;
+  margin-top: 0;
+  display: inline-block;
+}
+
+#search-button {
+  display: inline-block;
+  margin-bottom: 3px;
+  padding: 0;
+  height: 38.2px;
+  width: 100px;
+  font-size: 1rem;
+}
+
 #password {
+  width: 295px;
+  margin-top: 0;
+  display: inline-block;
+}
+
+#password-search {
   width: 295px;
   margin-top: 0;
   display: inline-block;

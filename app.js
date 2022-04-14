@@ -9,6 +9,7 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const sessions = require("express-session");
+const encrypt = require("mongoose-encryption");
 
 const saltRounds = 10;
 const port = 3000;
@@ -32,19 +33,23 @@ app.use(sessions({
 }));
 
 
-
 // Connect to mongoose and create user model
 mongoose.connect("mongodb://localhost:27017/passwordsDB");
 
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
-  sessionId: String,
   accounts: [{
     website: {type: String},
     password: {type: String}
   }]
 });
+
+const encKey = "IVvlQGEVNNQCZyzn4uHWefhlpPhR4BMkiMzLth/vY+c=";
+const sigKey = "hLEXg3EoG/wGZRbb4e+t8iisbNXDRxhbwG//dJKjCCZo1wBf28ukmAeTHz/ZELejbZpLUHrsGCROoLfqrHqBXg==";
+
+// userSchema.plugin(encrypt, {encryptionKey: encKey, signingKey: sigKey, encryptedFields: ["accounts"]});
+
 
 const User = mongoose.model("User", userSchema);
 
@@ -93,7 +98,7 @@ app.get("/password-add", function(req, res) {
 // get page for user to search their account for saved credentials
 app.get("/password-search", function(req, res) {
   session = req.session;
-  res.render("search", {username: session.userid, website: "", password: ""});
+  res.render("search", {username: session.userid, website: "", password: "", feedback: ""});
 });
 
 // get home route when user logs out and destroy their session
@@ -245,32 +250,71 @@ app.post("/password-search", function(req, res) {
 
   const username = session.userid;
   const enteredWebsite = req.body.website;
+  const updatedPassword = req.body.password;
+  const buttonClicked = req.body.button;
+  var accountIndex = "";
 
   var accountExists = false;
   var accountPassword = "";
 
-  // find user details in DB
-  User.findOne({username: username}, function(err, foundUser) {
-    if (err) {
-      console.log(err);
-    } else {
-      const userAccounts = foundUser.accounts;
-      // check searched website exists
-      userAccounts.forEach(function(account) {
-        if (account.website === enteredWebsite) {
-          accountExists = true;
-          accountPassword = account.password;
-        }
-      });
-      if (accountExists) {
-        // show details for found website
-        res.render("search", {username: username, website: enteredWebsite, password: accountPassword});
+  if (buttonClicked === "search") {
+    // find user details in DB
+    User.findOne({username: username}, function(err, foundUser) {
+      if (err) {
+        console.log(err);
       } else {
-        // show user credentials were not found for this website
-        res.render("search", {username: username, website: enteredWebsite, password: "Credentials not found"});
+        const userAccounts = foundUser.accounts;
+        // check searched website exists
+        userAccounts.forEach(function(account) {
+          if (account.website === enteredWebsite) {
+            accountExists = true;
+            accountPassword = account.password;
+          }
+        });
+        if (accountExists) {
+          // show details for found website
+          res.render("search", {username: username, website: enteredWebsite, password: accountPassword, feedback: ""});
+        } else {
+          // show user credentials were not found for this website
+          res.render("search", {username: username, website: enteredWebsite, password: "", feedback: "Failure"});
+        }
       }
-    }
-  });
+    });
+
+  } else if (buttonClicked === "save") {
+    // find user details in DB
+    User.findOne({username: username}, function(err, foundUser) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (foundUser) {
+          console.log(foundUser);
+          const userAccounts = foundUser.accounts;
+          userAccounts.forEach(function(account, i) {
+            if (account.website === enteredWebsite) {
+              accountIndex = i;
+              accountExists = true;
+            }
+          });
+          if (accountExists) {
+            foundUser.accounts[accountIndex].password = updatedPassword;
+            foundUser.save(function(err) {
+              if (err) {
+                console.log(err);
+              } else {
+                res.render("search", {username: username, website: "", password: "", feedback: "Success"});
+              }
+            });
+          } else {
+            res.render("search", {username: username, website: enteredWebsite, password: "", feedback: "Failure"});
+          }
+        }
+      }
+    });
+
+  } 
+
+
 
 });
 

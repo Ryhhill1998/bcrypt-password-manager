@@ -22,10 +22,25 @@
     </span>
   </div>
 
+  <% if (feedback === "Success") { %>
+    <h2 id="feedback">Successfully Saved Credentials <i id="success-icon" class="fa-solid fa-circle-check"></i></h2>
+  <% } else if (feedback === "Failure"){ %>
+    <h2 id="feedback">Credentials not found <i id="failure-icon" class="fa-solid fa-triangle-exclamation"></i></h2>
+  <% } else if (feedback === "Failure2"){ %>
+    <h2 id="feedback">Invalid password <i id="failure-icon" class="fa-solid fa-triangle-exclamation"></i></h2>
+  <% } %>
+
     <form action="/password-search" method="post" class="form-signin" autocomplete="off">
-      <input name="website" type="text" value="<%= website %>" class="form-control" placeholder="Website" required autofocus>
-      <input name="password" type="text" value="<%= password %>" class="form-control" placeholder="Password" readonly>
-      <button class="btn btn-lg btn-dark btn-block register" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <span>
+        <input id="website-search" name="website" type="text" value="<%= website %>" class="form-control" placeholder="Website" required autofocus>
+        <button id="search-button" name="button" value="search" class="btn btn-lg btn-dark btn-block generate" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </span>
+      <span>
+        <input id="password-search" name="password" type="text" value="<%= password %>" class="form-control" placeholder="Password" readonly>
+        <button id="edit" name="button" value="edit" class="btn btn-lg btn-dark btn-block generate" type="button"><i class="fa-solid fa-pen-to-square"></i></button>
+      </span>
+      <button id="save" name="button" value="save" class="btn btn-lg btn-dark btn-block register" type="submit">Save <i class="fa-solid fa-floppy-disk"></i></button>
+      <button id="delete" name="button" value="delete" class="btn btn-lg btn-dark btn-block register" type="submit">Delete <i class="fa-solid fa-ban"></i></button>
     </form>
 </div>
 

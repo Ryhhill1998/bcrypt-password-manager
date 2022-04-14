@@ -86,4 +86,10 @@ function generatePassword() {
 $(".generate").click(function() {
   let newPassword = generatePassword();
   $("#password").val(newPassword);
-})
+});
+
+
+// Make password editable after clicking edit
+$("#edit").click(function() {
+  $("#password-search").prop("readonly", false);
+});
